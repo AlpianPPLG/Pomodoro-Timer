@@ -1,13 +1,21 @@
 <template>
   <div
-    class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500 p-4"
+    :class="[
+      'min-h-screen flex items-center justify-center p-4',
+      darkMode ? 'bg-gray-800' : 'bg-gradient-to-r from-blue-500 to-purple-500'
+    ]"
   >
-    <div class="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md">
-      <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Pomodoro Timer</h1>
+    <div
+      :class="[
+        'bg-white p-6 rounded-lg shadow-2xl w-full max-w-md',
+        darkMode ? 'bg-gray-900 text-white' : 'text-gray-800'
+      ]"
+    >
+      <h1 class="text-3xl font-bold text-center mb-6">Pomodoro Timer</h1>
       <div class="flex justify-between mb-4">
         <button
           @click="openSettings"
-          class="text-gray-800 p-2 rounded-lg shadow-lg transition transform hover:scale-105"
+          class="p-2 rounded-lg shadow-lg transition transform hover:scale-105"
         >
           <svg
             width="24"
@@ -21,88 +29,90 @@
             />
           </svg>
         </button>
+        <button
+          @click="toggleDarkMode"
+          class="p-2 rounded-lg shadow-lg transition transform hover:scale-105"
+        >
+          {{ darkMode ? 'Light Mode' : 'Dark Mode' }}
+        </button>
       </div>
       <div class="flex justify-between mb-4">
-        <button
-          @click="setMode('work')"
-          :class="{ 'bg-blue-500': timerType === 'work', 'bg-gray-300': timerType !== 'work' }"
-          class="text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105"
-        >
-          Pomodoro
-        </button>
-        <button
-          @click="setMode('shortBreak')"
-          :class="{
-            'bg-blue-500': timerType === 'shortBreak',
-            'bg-gray-300': timerType !== 'shortBreak'
-          }"
-          class="text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105"
-        >
+        <button @click="setMode('work')" :class="buttonClass('work')">Pomodoro</button>
+        <button @click="setMode('shortBreak')" :class="buttonClass('shortBreak')">
           Short Break
         </button>
-        <button
-          @click="setMode('longBreak')"
-          :class="{
-            'bg-blue-500': timerType === 'longBreak',
-            'bg-gray-300': timerType !== 'longBreak'
-          }"
-          class="text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105"
-        >
-          Long Break
-        </button>
+        <button @click="setMode('longBreak')" :class="buttonClass('longBreak')">Long Break</button>
       </div>
       <div class="text-center mb-6">
-        <div class="text-6xl font-bold text-gray-800">{{ formattedTime }}</div>
+        <div class="text-6xl font-bold">{{ formattedTime }}</div>
+        <div class="text-xl">{{ timerType }}</div>
       </div>
-      <div class="flex justify-center space-x-4">
+      <div class="flex justify-center space-x-4 mb-4">
         <button
           @click="startTimer"
           :disabled="isRunning"
-          class="text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105 disabled:opacity-50"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105 disabled:opacity-50"
         >
-          <svg
-            width="24"
-            height="24"
-            xmlns="http://www.w3.org/2000/svg"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-          >
-            <path d="M23 12l-22 12v-24l22 12zm-21 10.315l18.912-10.315-18.912-10.315v20.63z" />
-          </svg>
+          Start
         </button>
         <button
           @click="pauseTimer"
           :disabled="!isRunning"
-          class="text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105 disabled:opacity-50"
+          class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105 disabled:opacity-50"
         >
-          <svg
-            width="24"
-            height="24"
-            xmlns="http://www.w3.org/2000/svg"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-          >
-            <path d="M10 24h-6v-24h6v24zm10 0h-6v-24h6v24zm-11-23h-4v22h4v-22zm10 0h-4v22h4v-22z" />
-          </svg>
+          Pause
         </button>
         <button
           @click="resetTimer"
-          class="text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105"
+          class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:scale-105"
         >
-          <svg
-            clip-rule="evenodd"
-            fill-rule="evenodd"
-            stroke-linejoin="round"
-            stroke-miterlimit="2"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6 text-red-500"
-          >
-            <path
-              d="m3.508 6.726c1.765-2.836 4.911-4.726 8.495-4.726 5.518 0 9.997 4.48 9.997 9.997 0 5.519-4.479 9.999-9.997 9.999-5.245 0-9.553-4.048-9.966-9.188-.024-.302.189-.811.749-.811.391 0 .715.3.747.69.351 4.369 4.012 7.809 8.47 7.809 4.69 0 8.497-3.808 8.497-8.499 0-4.689-3.807-8.497-8.497-8.497-3.037 0-5.704 1.597-7.206 3.995l1.991.005c.414 0 .75.336.75.75s-.336.75-.75.75h-3.75c-.415 0-.75-.335-.75-.75v-3.75c0-.414.336-.75.75-.75s.75.336.75.75v1.756zm8.492-3.476c-.414 0-.75-.336-.75-.75v-1.756c0-.414.336-.75.75-.75s.75.336.75.75v1.756c0 .414-.336.75-.75.75z"
-            />
-          </svg>
+          Reset
         </button>
+      </div>
+      <div class="mb-4">
+        <h2 class="text-xl font-bold mb-2">Task List</h2>
+        <input
+          v-model="newTask"
+          @keyup.enter="addTask"
+          placeholder="Add a new task"
+          class="w-full p-2 border rounded-lg mb-2"
+        />
+        <select
+          v-model="taskPriority"
+          @change="setPriority"
+          class="w-full p-2 border rounded-lg mb-2"
+        >
+          <option value="normal">Normal</option>
+          <option value="high">High</option>
+          <option value="low">Low</option>
+        </select>
+        <ul>
+          <li
+            v-for="(task, index) in sortedTasks"
+            :key="index"
+            class="flex justify-between items-center"
+          >
+            <span :class="task.priority">{{ task.text }}</span>
+            <button @click="removeTask(index)" class="text-red-500">Remove</button>
+          </li>
+        </ul>
+      </div>
+      <div class="mb-4">
+        <h2 class="text-xl font-bold mb-2">Task History</h2>
+        <ul>
+          <li
+            v-for="(hist, index) in taskHistory"
+            :key="index"
+            class="flex justify-between items-center"
+          >
+            <span>{{ hist }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="mb-4">
+        <h2 class="text-xl font-bold mb-2">Statistics</h2>
+        <p>Total Sessions: {{ totalSessions }}</p>
+        <p>Completed Sessions: {{ completedSessions }}</p>
       </div>
     </div>
 
@@ -169,7 +179,14 @@ export default {
       timeLeft: 0,
       isRunning: false,
       timerType: 'work',
-      isSettingsOpen: false
+      isSettingsOpen: false,
+      darkMode: false,
+      tasks: [],
+      newTask: '',
+      taskPriority: 'normal',
+      taskHistory: [],
+      totalSessions: 0,
+      completedSessions: 0
     }
   },
   computed: {
@@ -177,6 +194,12 @@ export default {
       const minutes = Math.floor(this.timeLeft / 60)
       const seconds = this.timeLeft % 60
       return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    },
+    sortedTasks() {
+      return this.tasks.slice().sort((a, b) => {
+        const priorityOrder = { high: 1, normal: 2, low: 3 }
+        return priorityOrder[a.priority] - priorityOrder[b.priority]
+      })
     }
   },
   methods: {
@@ -189,6 +212,9 @@ export default {
         } else {
           this.isRunning = false
           clearInterval(this.timer)
+          this.completedSessions++
+          this.totalSessions++
+          this.logSession()
           alert(
             `${this.timerType === 'work' ? 'Work' : this.timerType === 'shortBreak' ? 'Short Break' : 'Long Break'} session ended!`
           )
@@ -216,14 +242,67 @@ export default {
     saveSettings() {
       this.closeSettings()
       this.resetTimer()
+    },
+    toggleDarkMode() {
+      this.darkMode = !this.darkMode
+    },
+    buttonClass(mode) {
+      return this.timerType === mode
+        ? 'bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg'
+        : 'bg-gray-300 text-black px-4 py-2 rounded-lg shadow-lg'
+    },
+    addTask() {
+      if (this.newTask.trim() !== '') {
+        this.tasks.push({ text: this.newTask.trim(), priority: this.taskPriority })
+        this.newTask = ''
+        this.taskPriority = 'normal'
+      }
+    },
+    removeTask(index) {
+      this.tasks.splice(index, 1)
+    },
+    logSession() {
+      const sessionType =
+        this.timerType === 'work'
+          ? 'Work'
+          : this.timerType === 'shortBreak'
+            ? 'Short Break'
+            : 'Long Break'
+      this.taskHistory.push(
+        `${sessionType} session completed at ${new Date().toLocaleTimeString()}`
+      )
+    },
+    checkAutoDarkMode() {
+      const hours = new Date().getUTCHours() + 7 // Waktu Indonesia Barat (WIB)
+      if (hours >= 18 || hours < 6) {
+        this.darkMode = true // Aktifkan mode gelap otomatis
+      } else {
+        this.darkMode = false // Nonaktifkan mode gelap otomatis
+      }
     }
   },
   mounted() {
     this.resetTimer()
+    this.checkAutoDarkMode() // Cek mode gelap otomatis saat aplikasi dimuat
+    window.addEventListener('load', this.checkAutoDarkMode) // Cek mode gelap saat halaman dimuat
+    setInterval(this.checkAutoDarkMode, 60000) // Periksa setiap menit
+  },
+  beforeUnmount() {
+    window.removeEventListener('load', this.checkAutoDarkMode)
   }
 }
 </script>
 
 <style>
-/* Add any additional styling if needed */
+/* Tambahkan gaya tambahan jika diperlukan */
+.high {
+  color: red;
+  font-weight: bold;
+}
+.normal {
+  color: black;
+}
+.low {
+  color: green;
+}
 </style>
